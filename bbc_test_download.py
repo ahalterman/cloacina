@@ -1,6 +1,4 @@
-from get_source_day_total import get_source_day_total
-from authenticate import authenticate
-from download_day_source import download_day_source
+import lexikon
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -19,7 +17,7 @@ source_dict = {
     "Australian Associated Press":"160586",
 }
 
-authToken = authenticate(USERNAME, PASSWORD)
+authToken = lexikon.authenticate(USERNAME, PASSWORD)
 print authToken
 
 big_stories = []
@@ -28,11 +26,14 @@ big_junk = []
 
 date_list = ["2015-08-01", "2015-08-02", "2015-08-03", "2015-08-04", "2015-08-05", "2015-08-06", "2015-08-07", "2015-08-08", "2015-08-09", "2015-08-10"]
 for d in date_list:
-    total = get_source_day_total("BBC Monitoring", d, authToken)
+    total = lexikon.get_source_day_total("BBC Monitoring", d, authToken)
     total = total[0]
-    output = download_day_source("BBC Monitoring", d, total, authToken)
+    output = lexikon.download_day_source("BBC Monitoring", d, total, authToken)
     big_stories.extend(output['stories'])
     big_junk.extend(output['junk'])
 
+print "Number of stories: ",
 print len(big_stories)
+print "Number of stories with padding errors: ",
+print len(big_junk)
 print big_stories[12]
