@@ -1,9 +1,9 @@
-lexikon
+cloacina
 =======
 
 Tools for downloading from the LexisNexis API
 
-Currently, `lexikon` includes high-level interfaces for several LexisNexis
+Currently, `cloacina` includes high-level interfaces for several LexisNexis
 endpoint and operations, including:
 
 - authentication

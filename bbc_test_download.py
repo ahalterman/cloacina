@@ -1,4 +1,4 @@
-import lexikon
+import cloacina
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -17,7 +17,7 @@ source_dict = {
     "Australian Associated Press":"160586",
 }
 
-authToken = lexikon.authenticate(USERNAME, PASSWORD)
+authToken = cloacina.authenticate(USERNAME, PASSWORD)
 print authToken
 
 big_stories = []
@@ -26,9 +26,9 @@ big_junk = []
 
 date_list = ["2015-08-01", "2015-08-02", "2015-08-03", "2015-08-04", "2015-08-05", "2015-08-06", "2015-08-07", "2015-08-08", "2015-08-09", "2015-08-10"]
 for d in date_list:
-    total = lexikon.get_source_day_total("BBC Monitoring", d, authToken)
+    total = cloacina.get_source_day_total("BBC Monitoring", d, authToken)
     total = total[0]
-    output = lexikon.download_day_source("BBC Monitoring", d, total, authToken)
+    output = cloacina.download_day_source("BBC Monitoring", d, total, authToken)
     big_stories.extend(output['stories'])
     big_junk.extend(output['junk'])
 
