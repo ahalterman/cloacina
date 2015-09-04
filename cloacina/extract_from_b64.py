@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 import json
+import re
 
 def extract_from_b64(encoded_doc):
-    #doc = base64.urlsafe_b64decode(encoded_doc)
     doc = encoded_doc.decode("base64")
     doc = re.sub("</p><p>", " ", doc)
     soup = BeautifulSoup(doc)

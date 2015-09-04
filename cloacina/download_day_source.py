@@ -22,11 +22,11 @@ def download_day_source(source_name, date, source_day_total, authToken):
 
         for num, i in enumerate(soup.findAll("ns1:document")):
             t = i.text
-            try:
-                d = extract_from_b64(t)
-                output_list.append(d)
-            except:
-                junk_list.append(t) # error handling ¯\_(ツ)_/¯
+#            try:
+            d = extract_from_b64(t)
+            output_list.append(d)
+    #        except:
+     #           junk_list.append(t) # error handling ¯\_(ツ)_/¯
 
 
     output = {"stories" : output_list,

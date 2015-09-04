@@ -1,4 +1,5 @@
 import cloacina
+import json
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -32,8 +33,20 @@ for d in date_list:
     big_stories.extend(output['stories'])
     big_junk.extend(output['junk'])
 
+for d in date_list:
+    total = cloacina.get_source_day_total("AFP", d, authToken)
+    total = total[0]
+    output = cloacina.download_day_source("AFP", d, total, authToken)
+    big_stories.extend(output['stories'])
+    big_junk.extend(output['junk'])
+
+
+
+
 print "Number of stories: ",
 print len(big_stories)
 print "Number of stories with padding errors: ",
 print len(big_junk)
 print big_stories[12]
+with open('bbc_stories.json', 'w') as outfile:
+    json.dump(big_stories, outfile)
