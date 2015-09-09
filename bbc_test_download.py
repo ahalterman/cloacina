@@ -3,15 +3,7 @@ import json
 import glob
 import csv
 import datetime
-
-#import argparse
-#parser = argparse.ArgumentParser()
-#parser.add_argument("username", help="username")
-#parser.add_argument("password", help="password")
-#
-#args = parser.parse_args()
-#USERNAME = args.username
-#PASSWORD = args.password
+from multiprocessing import Pool
 
 logger = None
 
@@ -35,9 +27,9 @@ big_junk = []
 # But for now it'll only run on the first line of the source list csv.
 
 try:
-    sourcelist = open(whitelist_file, 'r').readlines()
-    sourcelist = [line.replace('\n', '').split('\t') for line in
-                     sourcelist if line]
+    sourcefile = open(whitelist_file, 'r').read().splitlines()
+    sourcelist = [line.split('\t') for line in sourcefile]
+    print sourcelist
     # Filtering based on list of sources from the config file
     # to_scrape = {listing[0]: [listing[1], listing[2]] for listing in sourcelist} <-- leave as list for now.
 except IOError:
@@ -53,10 +45,20 @@ def make_datelist(date1, date2):
     date_list = [i.strftime("%Y-%m-%d") for i in date_generated]
     return date_list
 
-#date_list = ["2015-08-01", "2015-08-02", "2015-08-03"]
-#
-for source in sourcelist:
+print sourcelist
+print type(sourcelist)
+
+pool = Pool(pool_size)
+
+def download_source(source):
+    if len(source) != 3:
+        logger.warning("Source doesn't have three columns: ({0})".format(source))
+        pass
     date_list = make_datelist(source[1], source[2])
+    try:
+        source_dict[source[0]]
+    except KeyError:
+        logger.warning("Source name ({0}) not in source dictionary.".format(source[0]))
     print type(source[0])
     print type(source[2])
     print "Scraping source {0} from {1} to {2}".format(source[0], source[1], source[2])
@@ -67,17 +69,15 @@ for source in sourcelist:
             output = cloacina.download_day_source(source[0], d, total, authToken)
             big_stories.extend(output['stories'])
             big_junk.extend(output['junk'])
-#
-#for d in date_list:
-#    total = cloacina.get_source_day_total("AFP", d, authToken)
-#    total = total[0]
-#    output = cloacina.download_day_source("AFP", d, total, authToken)
-#    big_stories.extend(output['stories'])
-#    big_junk.extend(output['junk'])
-#
 
+for source in sourcelist:
+   download_source(source)
 
+#results = [pool.apply_async(download_source, (source)) for source in
+#        sourcelist]
 
+# This is diagnostic stuff and will be switched out with the Mongo connector
+# for production.
 print "Number of stories: ",
 print len(big_stories)
 print "Number of stories with padding errors: ",
