@@ -4,3 +4,4 @@ from download_day_source import download_day_source
 from extract_from_b64 import extract_from_b64
 from get_results import get_results
 from get_source_day_total import get_source_day_total
+from utilities import parse_config

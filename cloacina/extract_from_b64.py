@@ -5,7 +5,7 @@ import re
 def extract_from_b64(encoded_doc):
     doc = encoded_doc.decode("base64")
     doc = re.sub("</p><p>", " ", doc)
-    soup = BeautifulSoup(doc)
+    soup = BeautifulSoup(doc, "lxml")
     news_source = soup.find("meta", {"name":"sourceName"})['content']
     article_title = soup.find("title").text.strip()
     publication_date = soup.find("div", {"class":"PUB-DATE"}).text.strip()
