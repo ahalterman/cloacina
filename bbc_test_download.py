@@ -40,50 +40,37 @@ def make_date_source_list(source):
     end = datetime.datetime.strptime(source[2], '%Y-%m-%d')
     date_generated = [start + datetime.timedelta(days=x) for x in range(0, (end-start).days)]
     date_list = [i.strftime("%Y-%m-%d") for i in date_generated]
-    source_list = [(source[0], date) for date in date_list]
+    source_list = [[source[0], date] for date in date_list]
     return source_list
 
 sourcelist = [make_date_source_list(source) for source in sourcelist] # apply to each source
 sourcelist = [item for sublist in sourcelist for item in sublist] # flatten list of lists. there has to be a neater way.
-print type(sourcelist)
-print sourcelist
+logger.info("Source list: {0},".format(sourcelist))
+ 
 
-pool_size = 2
+def download_wrapper(source):
+    # there's some global ugliness going on here. specifically, authToken
+    output = cloacina.download_day_source(source[0], source[1], source[2], authToken)
+    # We can't add this to the same global list because that doesn't work with
+    # multiprocessing
+    #print output
+
 pool = Pool(pool_size)
-# 
-# def download_source(source):
-#     if len(source) != 3:
-#         logger.warning("Source doesn't have three columns: ({0})".format(source))
-#         pass
-#     date_list = make_datelist(source[1], source[2])
-#     try:
-#         source_dict[source[0]]
-#     except KeyError:
-#         logger.warning("Source name ({0}) not in source dictionary.".format(source[0]))
-#     print type(source[0])
-#     print type(source[2])
-#     print "Scraping source {0} from {1} to {2}".format(source[0], source[1], source[2])
-#     for d in date_list:
-#         total = cloacina.get_source_day_total(source[0], d, authToken)
-#         if total:
-#             total = total[0]
-#             output = cloacina.download_day_source(source[0], d, total, authToken)
-#             big_stories.extend(output['stories'])
-#             big_junk.extend(output['junk'])
-# 
-# for source in sourcelist:
-#    download_source(source)
-# 
 
 totals = [pool.apply_async(cloacina.get_source_day_total, (source[0], source[1], authToken)) for source in sourcelist]
 totals = [r.get(9999999) for r in totals]
 totals = [int(item) for sublist in totals for item in sublist] # again with the crappy de-nesting
 print totals
-print source
-output = [pool.apply_async(cloacina.download_day_source(source[0], source[1], totals[i], authToken)) for i, source in enumerate(sourcelist)]
-output = [item for sublist in output for item in sublist] # collect from the multiprocessing pool result
-print len(output)
-print output[1]
+
+# add the totals in a third "column" to the sourcelist
+# maybe a better way to do this is to have the totals function take in a list
+# and add the totals in the same function.
+for i, source in enumerate(sourcelist):
+    source.append(totals[i])
+
+# This doesn't actually do anything yet--handle the output in the
+# download_wrapper funtion.
+pool.map(download_wrapper, sourcelist)
 
 # This is diagnostic stuff and will be switched out with the Mongo connector
 # for production.
