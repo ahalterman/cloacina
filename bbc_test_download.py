@@ -1,13 +1,24 @@
 import cloacina
+from cloacina import mongo_connection
 import json
 import glob
 import csv
 import datetime
 from multiprocessing import Pool
+from pymongo import MongoClient
+
 
 logger = None
 
 ln_user, ln_password, db_collection, whitelist_file, pool_size, log_dir, log_level, auth_db, auth_user, auth_pass, db_host = cloacina.parse_config()
+
+if db_host:
+    connection = MongoClient(host=db_host)
+else:
+    connection = MongoClient()
+
+db = connection.lexisnexis
+collection = db["test"]
 
 # maybe read this in from a JSON?
 source_dict = {
@@ -19,6 +30,8 @@ source_dict = {
 }
 
 authToken = cloacina.authenticate(ln_user, ln_password)
+if not authToken:
+    print "No auth token generated"
 
 big_stories = []
 big_junk = []
@@ -45,12 +58,24 @@ def make_date_source_list(source):
 
 sourcelist = [make_date_source_list(source) for source in sourcelist] # apply to each source
 sourcelist = [item for sublist in sourcelist for item in sublist] # flatten list of lists. there has to be a neater way.
-logger.info("Source list: {0},".format(sourcelist))
+
+#logger.info("Source list: {0},".format(sourcelist))
  
 
 def download_wrapper(source):
     # there's some global ugliness going on here. specifically, authToken
     output = cloacina.download_day_source(source[0], source[1], source[2], authToken)
+    lang = 'english'
+    
+    result = output['stories'][0]
+    print result
+    #print result['article_title']
+    for result in output['stories']:
+    #collection, news_source, article_title, publication_date_raw, article_body, lang, doc_id)
+        entry_id = mongo_connection.add_entry(collection, result['news_source'],
+            result['article_title'], result['publication_date_raw'],
+            result['article_body'], lang, result['doc_id'])
+    ##                                            
     # We can't add this to the same global list because that doesn't work with
     # multiprocessing
     #print output
@@ -67,6 +92,8 @@ print totals
 # and add the totals in the same function.
 for i, source in enumerate(sourcelist):
     source.append(totals[i])
+
+print sourcelist
 
 # This doesn't actually do anything yet--handle the output in the
 # download_wrapper funtion.
