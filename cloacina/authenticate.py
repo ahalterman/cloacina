@@ -16,12 +16,12 @@ def authenticate(username, password):
     </SOAP-ENV:Envelope>
     """.format(username, password)
 
-    headers = {"Host": "wskcert-www.lexisnexis.com",
+    headers = {"Host": "www.lexisnexis.com",
             "Content-Type": "text/xml; charset=UTF-8",
             "Content-Length": len(request),
             "SOAPAction": "Authenticate"}
 
-    t = requests.post(url="https://wskcert-www.lexisnexis.com/wsapi/v1/services/Authentication",
+    t = requests.post(url="https://www.lexisnexis.com/wsapi/v1/services/Authentication",
                      headers = headers,
                      data = request)
 
