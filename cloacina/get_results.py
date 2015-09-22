@@ -42,14 +42,19 @@ def get_results(source_name, date, start_result, end_result, authToken):
     </soap:Body>
     </SOAP-ENV:Envelope>""".format(authToken = authToken, date = date, source = source, searchterm = searchterm, start_result = start_result, end_result = end_result)
 
-    headers = {"Host": "wskcert-www.lexisnexis.com",
+    headers = {"Host": "www.lexisnexis.com",
                 "Content-Type": "text/xml; charset=UTF-8",
                 "Content-Length": len(req),
                 "Origin" : "http://www.lexisnexis.com",
                 "User-Agent" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36",
                 "SOAPAction": "Search"}
 
-    t = requests.post(url = "http://wskcert-www.lexisnexis.com/wsapi/v1/services/Search",
+    t = requests.post(url = "http://www.lexisnexis.com/wsapi/v1/services/Search",
                          headers = headers,
                          data = req)
     return t
+
+if __name__ == "__main__":
+    auth =  "" # put in fresh authToken before using
+    t = get_results("New York Times", "2015-09-01", 1, 10, auth)
+    print t.text
