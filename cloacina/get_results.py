@@ -1,12 +1,8 @@
 import requests
+import json
 
-source_dict = {
-        "New York Times":"6742",
-        "BBC Monitoring":"10962",
-        "AFP":"10903",
-        "AllAfrica":"361826",
-        "Australian Associated Press":"160586",
-}
+with open('source_name_id.json') as source_file:    
+        source_dict = json.load(source_file)
 
 def get_results(source_name, date, start_result, end_result, authToken):
     searchterm = "a"

@@ -26,23 +26,16 @@ else:
     connection = MongoClient()
 
 db = connection.lexisnexis
-collection = db["nytimes"]
+collection = db["test"]
 
-# maybe read this in from a JSON?
-source_dict = {
-    "New York Times":"6742",
-    "BBC Monitoring":"10962",
-    "AFP":"10903",
-    "AllAfrica":"361826",
-    "Australian Associated Press":"160586",
-}
 
 authToken = cloacina.authenticate(ln_user, ln_password)
 if not authToken:
     logger.error("No auth token generated")
+print authToken
 
-big_stories = []
-big_junk = []
+#big_stories = []
+#big_junk = []
 
 try:
     sourcefile = open(whitelist_file, 'r').read().splitlines()
@@ -79,7 +72,8 @@ def download_wrapper(source):
         #print result
         #print result['article_title']
         for result in output['stories']:
-        #collection, news_source, article_title, publication_date_raw, article_body, lang, doc_id)
+            print result
+            #collection, news_source, article_title, publication_date_raw, article_body, lang, doc_id)
             entry_id = mongo_connection.add_entry(collection, result['news_source'],
                 result['article_title'], result['publication_date_raw'],
                 result['article_body'], lang, result['doc_id'])
