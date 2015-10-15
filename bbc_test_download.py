@@ -26,7 +26,7 @@ else:
     connection = MongoClient()
 
 db = connection.lexisnexis
-collection = db["test"]
+collection = db[db_collection]
 
 
 authToken = cloacina.authenticate(ln_user, ln_password)
@@ -39,7 +39,7 @@ print authToken
 
 try:
     sourcefile = open(whitelist_file, 'r').read().splitlines()
-    sourcelist = [line.split('\t') for line in sourcefile]
+    sourcelist = [line.split(';') for line in sourcefile]
     print sourcelist
     # Filtering based on list of sources from the config file
     # to_scrape = {listing[0]: [listing[1], listing[2]] for listing in sourcelist} <-- leave as list for now.
@@ -50,6 +50,8 @@ except IOError:
 
 
 def make_date_source_list(source):
+    if len(source) != 3:
+        logger.warning("Source is not of length 3. Formatting problem? {0}".format(source))
     start = datetime.datetime.strptime(source[1], '%Y-%m-%d')
     end = datetime.datetime.strptime(source[2], '%Y-%m-%d')
     date_generated = [start + datetime.timedelta(days=x) for x in range(0, (end-start).days)]
@@ -68,12 +70,7 @@ def download_wrapper(source):
         output = cloacina.download_day_source(source[0], source[1], source[2], authToken)
         lang = 'english'
         
-        #result = output['stories'][0]
-        #print result
-        #print result['article_title']
         for result in output['stories']:
-            print result
-            #collection, news_source, article_title, publication_date_raw, article_body, lang, doc_id)
             entry_id = mongo_connection.add_entry(collection, result['news_source'],
                 result['article_title'], result['publication_date_raw'],
                 result['article_body'], lang, result['doc_id'])
@@ -100,5 +97,5 @@ logger.info(sourcelist)
 
 pool.map(download_wrapper, sourcelist)
 
-logger.info("Download complete")
+logger.info("Process complete")
 
