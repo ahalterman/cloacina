@@ -30,3 +30,4 @@ def authenticate(username, password):
     p = p[0][0]
     for i in p.findall('{http://authenticate.authentication.services.v1.wsapi.lexisnexis.com}binarySecurityToken'):
         return i.text
+

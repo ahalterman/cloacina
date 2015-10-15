@@ -21,12 +21,15 @@ def download_day_source(source_name, date, source_day_total, authToken):
         soup = BeautifulSoup(t)
 
         for num, i in enumerate(soup.findAll("ns1:document")):
-            t = i.text
-#            try:
-            d = extract_from_b64(t)
-            output_list.append(d)
-    #        except:
-     #           junk_list.append(t) # error handling ¯\_(ツ)_/¯
+            try:
+                t = i.text
+#                try:
+                d = extract_from_b64(t)
+                output_list.append(d)
+            except:
+                junk_list.append(t) # error handling ¯\_(ツ)_/¯
+    if junk_list:
+        print "There were problems getting text from the base 64 in download_day_source. {0}".format(len(junk_list))
 
 
     output = {"stories" : output_list,

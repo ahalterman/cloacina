@@ -1,12 +1,8 @@
 import requests
+import json
 
-source_dict = {
-        "New York Times":"6742",
-        "BBC Monitoring":"10962",
-        "AFP":"10903",
-        "AllAfrica":"361826",
-        "Australian Associated Press":"160586",
-}
+with open('source_name_id.json') as source_file:    
+    source_dict = json.load(source_file)
 
 def get_results(source_name, date, start_result, end_result, authToken):
     searchterm = "a"
@@ -49,10 +45,14 @@ def get_results(source_name, date, start_result, end_result, authToken):
                 "User-Agent" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36",
                 "SOAPAction": "Search"}
 
-    t = requests.post(url = "http://www.lexisnexis.com/wsapi/v1/services/Search",
+    try:
+        t = requests.post(url = "http://www.lexisnexis.com/wsapi/v1/services/Search",
                          headers = headers,
                          data = req)
-    return t
+        return t
+    
+    except ConnectionError as e:
+        print "Problem in `get_results` for {0} on {1}: {2}".format(source_name, date, e)
 
 if __name__ == "__main__":
     auth =  "" # put in fresh authToken before using
