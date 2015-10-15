@@ -14,6 +14,7 @@ def get_source_day_total(source_name, date, authToken):
         if c != []:
             return c
         else:
+            print "In get_source_day_total, couldn't find total documents: {0}".format(t.text)
             return [0]
     except Exception as e:
         print "There was an error. Check the log file"

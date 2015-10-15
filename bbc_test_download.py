@@ -61,20 +61,25 @@ def make_date_source_list(source):
 
 sourcelist = [make_date_source_list(source) for source in sourcelist] # apply to each source
 sourcelist = [item for sublist in sourcelist for item in sublist] # flatten list of lists. there has to be a neater way.
-#logger.info(sourcelist)
 
+logger.info(sourcelist)
 
 def download_wrapper(source):
     # there's some global ugliness going on here. specifically, authToken
     try:
         output = cloacina.download_day_source(source[0], source[1], source[2], authToken)
         lang = 'english'
-        
+       
+        mongo_error = []
         for result in output['stories']:
-            entry_id = mongo_connection.add_entry(collection, result['news_source'],
-                result['article_title'], result['publication_date_raw'],
-                result['article_body'], lang, result['doc_id'])
-
+            try:
+                entry_id = mongo_connection.add_entry(collection, result['news_source'],
+                    result['article_title'], result['publication_date_raw'],
+                    result['article_body'], lang, result['doc_id'])
+            except Exception as e:
+                mongo_error.append(e)
+        if mongo_error:
+            logger.warning("There were error(s) in the Mongo loading {0}".format(mongo_error))
     except Exception as e:
         logger.warning("Error downloading {0}: {1}".format(source, e))
 
