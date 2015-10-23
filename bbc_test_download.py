@@ -88,7 +88,7 @@ logger.info("Using {0} workers".format(pool_size))
 
 totals = [pool.apply_async(cloacina.get_source_day_total, (source[0], source[1], authToken)) for source in sourcelist]
 totals = [r.get(9999999) for r in totals]
-totals = [int(item) for sublist in totals for item in sublist] # again with the crappy de-nesting
+
 logger.info("Here are the totals:\n{0}".format(totals))
 print totals
 
