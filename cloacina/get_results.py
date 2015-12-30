@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import requests
+import re
 import json
 
 with open('source_name_id.json') as source_file:    
@@ -6,7 +8,12 @@ with open('source_name_id.json') as source_file:
 
 def get_results(source_name, date, start_result, end_result, authToken):
     searchterm = "a"
+    if re.search("Arabic", source_name):
+        searchterm = u"الـ"
+        print searchterm
+
     source = source_dict[source_name]
+
     req = """<SOAP-ENV:Envelope
        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
        SOAP-ENV:encodingStyle= "http://schemas.xmlsoap.org/soap/encoding/">
@@ -51,7 +58,7 @@ def get_results(source_name, date, start_result, end_result, authToken):
                          data = req)
         return t
     
-    except ConnectionError as e:
+    except Exception as e:
         print "Problem in `get_results` for {0} on {1}: {2}".format(source_name, date, e)
 
 if __name__ == "__main__":

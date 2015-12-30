@@ -11,7 +11,6 @@ def get_source_day_total(source_name, date, authToken):
             print "Error 500 from server on getting source-day total for {0} on {1}: {2}".format(source_name, date, t.text)
             return 0
         c = re.findall('">(\d+?)</ns3:documentsFound', t.text)
-        print "c is {0}".format(c)
 
         if c != []:
             try:
@@ -24,6 +23,5 @@ def get_source_day_total(source_name, date, authToken):
             print "In get_source_day_total, couldn't find total documents: {0}".format(t.text)
             return 0
     except Exception as e:
-        print "There was an error. Check the log file"
         print "Problem getting total for {0}, {1}: {2}".format(source_name, date, e)
         return 0

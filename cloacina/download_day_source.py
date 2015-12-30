@@ -9,6 +9,8 @@ def download_day_source(source_name, date, source_day_total, authToken):
     iter_list = construct_page_list(source_day_total)
 
     results_list = []
+    
+    # if source_day_total is 0, just pass?
 
     for p in iter_list:
         t = get_results(source_name, date, p[0], p[1], authToken)

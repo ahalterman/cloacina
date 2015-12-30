@@ -48,6 +48,12 @@ except IOError:
     logger.warning('Could not open URL whitelist file.')
     raise
 
+with open('source_name_id.json') as source_file:                                                                                                                                     
+        source_dict = json.load(source_file)     
+
+print "Sourcelist:",
+print sourcelist
+print "Scraping from source number {0}".format(source_dict[sourcelist[0][0]])
 
 def make_date_source_list(source):
     if len(source) != 3:
@@ -59,10 +65,15 @@ def make_date_source_list(source):
     source_list = [[source[0], date] for date in date_list]
     return source_list
 
+print "Un-nesting source list."
 sourcelist = [make_date_source_list(source) for source in sourcelist] # apply to each source
 sourcelist = [item for sublist in sourcelist for item in sublist] # flatten list of lists. there has to be a neater way.
 
-logger.info(sourcelist)
+if len(sourcelist) < 30:
+    print sourcelist
+if len(sourcelist) > 30:
+    print sourcelist[0:30]
+#logger.info(sourcelist)
 
 def download_wrapper(source):
     # there's some global ugliness going on here. specifically, authToken
@@ -84,7 +95,7 @@ def download_wrapper(source):
         logger.warning("Error downloading {0}: {1}".format(source, e))
 
 pool = Pool(pool_size)
-logger.info("Using {0} workers".format(pool_size))
+logger.info("Using {0} workers to get source-day totals.".format(pool_size))
 
 totals = [pool.apply_async(cloacina.get_source_day_total, (source[0], source[1], authToken)) for source in sourcelist]
 totals = [r.get(9999999) for r in totals]
@@ -98,8 +109,9 @@ print totals
 for i, source in enumerate(sourcelist):
     source.append(totals[i])
 
-logger.info(sourcelist)
+# logger.info(sourcelist)
 
+print "Sending the source list to the pool of workers for downloading"
 pool.map(download_wrapper, sourcelist)
 
 logger.info("Process complete")
