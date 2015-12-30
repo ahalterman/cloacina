@@ -6,6 +6,7 @@ def extract_from_b64(encoded_doc):
     #doc = base64.urlsafe_b64decode(encoded_doc)
     doc = encoded_doc.decode("base64")
     doc = re.sub("</p><p>", " ", doc)
+    doc = re.sub('<div class="BODY-2">', " ", doc)
     soup = BeautifulSoup(doc)
     news_source = soup.find("meta", {"name":"sourceName"})['content']
     article_title = soup.find("title").text.strip()
