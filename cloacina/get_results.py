@@ -7,9 +7,10 @@ with open('source_name_id.json') as source_file:
     source_dict = json.load(source_file)
 
 def get_results(source_name, date, start_result, end_result, authToken):
+    #searchterm = "a OR an OR the"
     searchterm = "a"
     if re.search("Arabic", source_name):
-        searchterm = u"الـ"
+        searchterm = u"أن OR من OR هذا OR أن OR يا"
         print searchterm
 
     source = source_dict[source_name]
