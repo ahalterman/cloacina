@@ -7,6 +7,7 @@ import datetime
 from multiprocessing import Pool
 from pymongo import MongoClient
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -28,6 +29,18 @@ else:
 db = connection.lexisnexis
 collection = db[db_collection]
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--user", help="LexisNexis username")
+parser.add_argument("--password", help="Password for LexisNexis username")
+parser.add_argument("--source", help="sourcename;start_yyyy-mm-dd;end_yyyy-mm-dd")
+
+args = parser.parse_args()
+ln_user = args.user
+ln_password = args.password
+source = [args.source]
+
+print source
 
 authToken = cloacina.authenticate(ln_user, ln_password)
 if not authToken:
@@ -37,16 +50,20 @@ print authToken
 #big_stories = []
 #big_junk = []
 
-try:
-    sourcefile = open(whitelist_file, 'r').read().splitlines()
-    sourcelist = [line.split(';') for line in sourcefile]
-    print sourcelist
-    # Filtering based on list of sources from the config file
-    # to_scrape = {listing[0]: [listing[1], listing[2]] for listing in sourcelist} <-- leave as list for now.
-except IOError:
-    print 'There was an error. Check the log file for more information.'
-    logger.warning('Could not open URL whitelist file.')
-    raise
+
+
+#try:
+#    sourcefile = open(whitelist_file, 'r').read().splitlines()
+#    sourcelist = [line.split(';') for line in sourcefile]
+#    print sourcelist
+#    # Filtering based on list of sources from the config file
+#    # to_scrape = {listing[0]: [listing[1], listing[2]] for listing in sourcelist} <-- leave as list for now.
+#except IOError:
+#    print 'There was an error. Check the log file for more information.'
+#    logger.warning('Could not open URL whitelist file.')
+#    raise
+
+sourcelist = [line.split(';') for line in source] 
 
 with open('source_name_id.json') as source_file:                                                                                                                                     
         source_dict = json.load(source_file)     
@@ -54,6 +71,7 @@ with open('source_name_id.json') as source_file:
 print "Sourcelist:",
 print sourcelist
 print "Scraping from source number {0}".format(source_dict[sourcelist[0][0]])
+
 
 def make_date_source_list(source):
     if len(source) != 3:
