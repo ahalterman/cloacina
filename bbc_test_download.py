@@ -103,6 +103,11 @@ totals = [r.get(9999999) for r in totals]
 logger.info("Here are the totals:\n{0}".format(totals))
 print totals
 
+try:
+    print sum(totals)
+except Exception:
+    print "Error printing sum of totals."
+
 # add the totals in a third "column" to the sourcelist
 # maybe a better way to do this is to have the totals function take in a list
 # and add the totals in the same function.
