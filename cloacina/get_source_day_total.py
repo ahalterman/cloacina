@@ -22,6 +22,8 @@ def get_source_day_total(source_name, date, authToken):
         else:
             print "In get_source_day_total, couldn't find total documents: {0}".format(t.text)
             return 0
+    except KeyError:
+        print "Key error. Are you sure the source is in source_name_id.json?"
     except Exception as e:
         print "Problem getting total for {0}, {1}: {2}".format(source_name, date, e)
         return 0

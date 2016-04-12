@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import requests
 import re
 import json
@@ -10,8 +11,11 @@ def get_results(source_name, date, start_result, end_result, authToken):
     #searchterm = "a OR an OR the"
     searchterm = "a AND NOT playoff! OR teammate! OR NFL OR halftime OR NBA OR quarterback OR goalie OR NHL OR postseason OR head coach OR N.F.L. OR N.B.A. OR field goal! OR playoff!"
     if re.search("Arabic", source_name):
-        searchterm = u"أن OR من OR هذا OR أن OR يا"
-        print searchterm
+        #searchterm = u"أن OR من OR هذا OR أن OR يا"
+        searchterm = "ﻢﻧ"
+    
+    if re.search("Spanish", source_name):
+        searchterm = "el OR la"
 
     source = source_dict[source_name]
 

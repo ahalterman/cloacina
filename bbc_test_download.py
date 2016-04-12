@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import cloacina
 from cloacina import mongo_connection
 import json
@@ -40,7 +41,7 @@ ln_user = args.user
 ln_password = args.password
 source = [args.source]
 
-print source
+print "Source: {0}".format(source)
 
 authToken = cloacina.authenticate(ln_user, ln_password)
 if not authToken:
